@@ -16,17 +16,7 @@ class Grid(context: Context?) : ViewGroup(context) {
 
     private val TAG:String = this.javaClass.simpleName;
 
-    // at 1/3rd marker of the width
-    private var leftVerticalLine: Float = 0f
-
-    // at 2/3rd marker of the width
-    private var rightVerticalLine: Float = 0f
-
-    // at 1/3rd of the height
-    private var topHorizontalLine: Float = 0f
-
-    // at 2/3rd of the height
-    private var bottomHorizontalLine: Float = 0f;
+    private val gridLines: FloatArray = FloatArray(4 * 4)
 
     private val paint: Paint = Paint()
 
@@ -42,21 +32,37 @@ class Grid(context: Context?) : ViewGroup(context) {
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         // normally, we'd obey padding set, but I don't plan on even using that, so we can skip that calculation.
-        leftVerticalLine = width / 3f
-        rightVerticalLine = leftVerticalLine * 2
-        topHorizontalLine = height / 3f
-        bottomHorizontalLine = topHorizontalLine * 2
+        var leftVerticalLine = width / 3f
+        var rightVerticalLine = leftVerticalLine * 2
+        var topHorizontalLine = height / 3f
+        var bottomHorizontalLine = topHorizontalLine * 2
         Log.v(TAG, "leftVerticalLine $leftVerticalLine, rightVerticalLine $rightVerticalLine topHorizontalLine $topHorizontalLine, bottomHorizontalLine $bottomHorizontalLine")
+        gridLines.set(0, 0f)
+        gridLines.set(1, topHorizontalLine)
+        gridLines.set(2, width.toFloat())
+        gridLines.set(3, topHorizontalLine)
+
+        gridLines.set(4, 0f)
+        gridLines.set(5, bottomHorizontalLine)
+        gridLines.set(6, width.toFloat())
+        gridLines.set(7, bottomHorizontalLine)
+
+        gridLines.set(8, leftVerticalLine)
+        gridLines.set(9, 0f)
+        gridLines.set(10, leftVerticalLine)
+        gridLines.set(11, height.toFloat())
+
+        gridLines.set(12, rightVerticalLine)
+        gridLines.set(13, 0f)
+        gridLines.set(14, rightVerticalLine)
+        gridLines.set(15, height.toFloat())
         //todo: don't forget about laying the children
     }
 
     override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
         //todo use the batch drawLine call
-        canvas.drawLine(leftVerticalLine, 0f, leftVerticalLine, height.toFloat(), paint)
-        canvas.drawLine(rightVerticalLine, 0f, rightVerticalLine, height.toFloat(), paint)
-        canvas.drawLine(0f, topHorizontalLine, width.toFloat(), topHorizontalLine, paint)
-        canvas.drawLine(0f, bottomHorizontalLine, width.toFloat(), bottomHorizontalLine, paint)
+        canvas.drawLines(gridLines, paint)
     }
 
 }
