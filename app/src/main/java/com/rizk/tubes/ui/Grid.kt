@@ -36,7 +36,6 @@ class Grid(context: Context?) : ViewGroup(context) {
     }
 
     private fun initTubes() {
-        addView(Tube(context, width / SIZE, height / SIZE), ViewGroup.MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
         for (i in 0 until (NUM_TUBES)) {
 //            addView(Tube(context, width / SIZE, height / SIZE))
         }
@@ -45,6 +44,19 @@ class Grid(context: Context?) : ViewGroup(context) {
     // do not allow scrolling
     override fun shouldDelayChildPressedState(): Boolean {
         return false;
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        Log.v(TAG, "width $width height $height oldwidth: $oldw oldheight $oldh")
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
