@@ -50,15 +50,13 @@ class Grid: ViewGroup {
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         Log.v("Grid onMeasure w", MeasureSpec.toString(widthMeasureSpec));
         Log.v("Grid onMeasure h", MeasureSpec.toString(heightMeasureSpec));
         for (i in 0 until childCount) {
-            val child = getChildAt(i)
-            measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
+            val child : Tube = getChildAt(i) as Tube
+            child.measure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec) / 3, MeasureSpec.EXACTLY),  MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec) / 3, MeasureSpec.EXACTLY));
         }
-//        setMeasuredDimension()
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-//        setMeasuredDimension(, suggestedMinimumHeight)
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {

@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import com.rizk.tubes.util.Log
 
 
@@ -16,13 +17,16 @@ class Tube : View {
     private val TAG = "Tube"
 
     init {
-        Log.v(TAG, "init. width: $width height: $height")
+        layoutParams = ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        Log.v(TAG, " width measure spec: ${MeasureSpec.toString(widthMeasureSpec)} ${MeasureSpec.toString(heightMeasureSpec)}")
-    }
+//    
+//    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+//        Log.v("Tube onMeasure w", MeasureSpec.toString(widthMeasureSpec));
+//        Log.v("Tube onMeasure h", MeasureSpec.toString(heightMeasureSpec));
+//        var parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+//        var parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+//        super.onMeasure(MeasureSpec.makeMeasureSpec(parentWidth / 3, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(parentHeight / 3, MeasureSpec.EXACTLY))
+//    }
 
     override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
