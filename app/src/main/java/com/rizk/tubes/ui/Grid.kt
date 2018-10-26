@@ -10,8 +10,7 @@ import android.view.ViewGroup
 import com.rizk.tubes.util.Log
 
 /**
- * Makes a tic-tac-toe style grid.
- * Parent of the tubes.
+ * The primary layout manager for the whole game.
  */
 class Grid: ViewGroup {
 
