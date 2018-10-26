@@ -3,21 +3,29 @@ package com.rizk.tubes.ui
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.util.AttributeSet
+import android.graphics.Paint
 import android.view.View
-import com.rizk.tubes.util.Log
+
 
 
 class Tube : View {
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
-    constructor(context: Context, attributeSet: AttributeSet, defStyleAttr : Int) : super(context, attributeSet, defStyleAttr)
+     val tubeId : Int
+        get() : Int = field
+
 
     private val TAG = "Tube"
 
+    constructor(context: Context, id : Int) : super(context)
+
+    private val paint = Paint()
+    init {
+        this.tubeId = id
+        paint.color = Color.BLACK
+    }
+
     override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
-        Log.v(TAG, "onDraw")
+        canvas.drawText(tubeId.toString(), x, y, paint)
         canvas.drawColor(Color.CYAN)
     }
 }

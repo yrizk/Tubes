@@ -22,9 +22,11 @@ class Grid: ViewGroup {
 
     private val SIZE = 3;
 
-    private val NUM_TUBES = SIZE * SIZE - 4;
+    private val NUM_TUBES = (SIZE * SIZE) - 4;
 
     private val gridLines: FloatArray = FloatArray(4 * (SIZE - 1) * 2)
+
+    private var currentCell = 0;
 
     private val paint: Paint = Paint()
 
@@ -34,7 +36,9 @@ class Grid: ViewGroup {
     }
 
     private fun initTubes() {
-        addView(Tube(context))
+        for (i in 0 until NUM_TUBES) {
+            addView(Tube(context, i))
+        }
     }
 
 
@@ -55,15 +59,35 @@ class Grid: ViewGroup {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        Log.v("Grid onMeasure w", MeasureSpec.toString(widthMeasureSpec));
-        Log.v("Grid onMeasure h", MeasureSpec.toString(heightMeasureSpec));
+        Log.v(TAG, "widthMeasureSpec: ${MeasureSpec.toString(widthMeasureSpec)} , heightMeasureSpec: ${MeasureSpec.toString(heightMeasureSpec)}")
+        var cellWidth = MeasureSpec.getSize(widthMeasureSpec) / SIZE
+        var cellHeight = MeasureSpec.getSize(heightMeasureSpec) / SIZE
         for (i in 0 until childCount) {
-            val child : Tube = getChildAt(i) as Tube
-            child.measure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec) / 3, MeasureSpec.EXACTLY),  MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec) / 3, MeasureSpec.EXACTLY));
+            val child : Tube = getChildAt(i) as Tube // THIS WILL NOT HOLD FOREVER
+            child.measure(MeasureSpec.makeMeasureSpec(cellWidth, MeasureSpec.EXACTLY),  MeasureSpec.makeMeasureSpec(cellHeight, MeasureSpec.EXACTLY));
         }
     }
 
+
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        layoutGridLines()
+        val i = 0
+        val j = 0
+        for (i in 0 until childCount) {
+            val v = getChildAt(i) as Tube
+            if (v.visibility != View.GONE) {
+                val measuredWidth =  v.measuredWidth
+                val measuredHeight = v.measuredHeight
+                val leftPos = (i % SIZE).times(measuredWidth)
+                val topPos = (i / SIZE).times(measuredHeight)
+                Log.v(TAG, "left : $leftPos top: $topPos")
+                v.layout(leftPos, topPos, leftPos +  measuredWidth, topPos + measuredHeight)
+                currentCell = i
+            }
+        }
+    }
+
+    private fun layoutGridLines() {
         // normally, we'd obey padding set, but I don't plan on even using that, so we can skip that calculation.
         var leftVerticalLine = width / 3f
         var rightVerticalLine = leftVerticalLine * 2
@@ -89,15 +113,6 @@ class Grid: ViewGroup {
         gridLines.set(13, 0f)
         gridLines.set(14, rightVerticalLine)
         gridLines.set(15, height.toFloat())
-        for (i in 0 until childCount) {
-            val v = getChildAt(i)
-            if (v.visibility != View.GONE) {
-                val lp : LayoutParams = v.layoutParams
-                val measuredWidth =   v.measuredWidth
-                val measuredHeight = v.measuredHeight
-                v.layout(0, 0, measuredWidth, measuredHeight)
-            }
-        }
     }
 
     override fun dispatchDraw(canvas: Canvas) {
