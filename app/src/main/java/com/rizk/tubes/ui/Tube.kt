@@ -15,15 +15,6 @@ class Tube : View {
 
     private val TAG = "Tube"
 
-//
-//    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-//        Log.v("Tube onMeasure w", MeasureSpec.toString(widthMeasureSpec));
-//        Log.v("Tube onMeasure h", MeasureSpec.toString(heightMeasureSpec));
-//        var parentWidth = MeasureSpec.getSize(widthMeasureSpec);
-//        var parentHeight = MeasureSpec.getSize(heightMeasureSpec);
-//        super.onMeasure(MeasureSpec.makeMeasureSpec(parentWidth / 3, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(parentHeight / 3, MeasureSpec.EXACTLY))
-//    }
-
     override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
         Log.v(TAG, "onDraw")
