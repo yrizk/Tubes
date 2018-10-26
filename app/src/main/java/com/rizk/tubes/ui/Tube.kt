@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
-import android.view.ViewGroup
 import com.rizk.tubes.util.Log
 
 
@@ -16,10 +15,7 @@ class Tube : View {
 
     private val TAG = "Tube"
 
-    init {
-        layoutParams = ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-    }
-//    
+//
 //    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 //        Log.v("Tube onMeasure w", MeasureSpec.toString(widthMeasureSpec));
 //        Log.v("Tube onMeasure h", MeasureSpec.toString(heightMeasureSpec));
