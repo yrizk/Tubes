@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import com.rizk.tubes.util.Log
@@ -12,7 +13,11 @@ import com.rizk.tubes.util.Log
  * Makes a tic-tac-toe style grid.
  * Parent of the tubes.
  */
-class Grid(context: Context?) : ViewGroup(context) {
+class Grid: ViewGroup {
+
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
+    constructor(context: Context, attributeSet: AttributeSet, defStyleAttr : Int) : super(context, attributeSet, defStyleAttr)
 
     private val TAG:String = this.javaClass.simpleName;
 
@@ -26,19 +31,12 @@ class Grid(context: Context?) : ViewGroup(context) {
 
     init {
         initPaint()
-        initTubes()
     }
 
 
     private fun initPaint() {
         paint.color = Color.RED
         paint.strokeWidth = 10f
-    }
-
-    private fun initTubes() {
-        for (i in 0 until (NUM_TUBES)) {
-//            addView(Tube(context, width / SIZE, height / SIZE))
-        }
     }
 
     // do not allow scrolling
@@ -52,11 +50,15 @@ class Grid(context: Context?) : ViewGroup(context) {
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        Log.v("Grid onMeasure w", MeasureSpec.toString(widthMeasureSpec));
+        Log.v("Grid onMeasure h", MeasureSpec.toString(heightMeasureSpec));
         for (i in 0 until childCount) {
             val child = getChildAt(i)
             measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
         }
+//        setMeasuredDimension()
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+//        setMeasuredDimension(, suggestedMinimumHeight)
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
