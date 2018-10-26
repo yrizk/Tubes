@@ -31,6 +31,11 @@ class Grid: ViewGroup {
 
     init {
         initPaint()
+        initTubes()
+    }
+
+    private fun initTubes() {
+        addView(Tube(context))
     }
 
 
