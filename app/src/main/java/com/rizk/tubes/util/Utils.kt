@@ -16,8 +16,14 @@ class Log {
     }
 }
 
-class ScreenUtils {
+class ViewUtils {
     companion object {
         fun dpToPx(dp: Int): Int = (dp.times(Resources.getSystem().displayMetrics.density)).toInt()
+
+        // Assumes the input is a square matrix
+        fun twoDimensionToOneDimension(i : Int, j : Int, width: Int): Int =  i * width + j
+
+        // Assumes the output is a square matrix
+        fun oneDimensionToTwoDimension(x : Int, size: Int) : Pair<Int, Int> = Pair(x % size, x / size)
     }
 }
