@@ -5,13 +5,11 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import com.rizk.tubes.util.Log
 import com.rizk.tubes.util.ViewUtils
-import kotlin.math.roundToInt
 
 /**
  * The primary layout manager for the whole game.
@@ -45,40 +43,10 @@ class Grid: ViewGroup {
      * TODO support multitouch
      * TODO move this stuff into its own class
      */
-    private var selectedTubeForMovement : Tube? = null;
+    private var selectedTubeForMovement : Tube? = null
+    private var selectedTubeDx : Float = 0f
+    private var selectedTubeDy : Float = 0f
     private var start: MotionEvent? = null
-
-    private val listener =  object : GestureDetector.SimpleOnGestureListener() {
-        override fun onDown(e: MotionEvent): Boolean {
-            // todo figure out which tube was moved.
-            findViewByTouchEvent(e)
-            return true
-        }
-        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-            postInvalidate()
-            return true
-        }
-
-        private fun findViewByTouchEvent(motionEvent: MotionEvent) : Boolean {
-            val x = motionEvent.x
-            val y = motionEvent.y
-            //TODO I can optimize this search if I have a tree representation of the children which of course we do!
-            // can also use top level dimensions
-            for (i in 0 until childCount) {
-                val t = getChildAt(i) as Tube
-                if (t.left < x && t.right > x) {
-                    if (t.top < y && t.bottom > y) {
-                        selectedTubeForMovement = t
-                        start = motionEvent
-                        return true
-                    }
-                }
-            }
-            return false
-        }
-    }
-
-    private val mDetector: GestureDetector = GestureDetector(context, listener)
 
     init {
         initPaint()
@@ -170,44 +138,85 @@ class Grid: ViewGroup {
         canvas.drawLines(gridLines, paint)
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        mDetector.onTouchEvent(event).let {
-            // Already picking up ACTION_DOWN
-            when (event?.action) {
-                MotionEvent.ACTION_UP ->  {
-
-                    start?.let {
-                        // TODO here's what we're doing: if we can move to event's cell, swap those two (if there's a tube there)
-                        handleMove(it, event)
-                        return true;
-                    }
-                    return false
-                }
-            }
-            return false
-        }
+    private fun swap(piece1: GamePiece, piece2: GamePiece)  {
+        Log.v(TAG, "swap time")
+        var pid1 = piece1.pieceId
+        var pid2 = piece2.pieceId
+        removeView(piece1)
+        removeView(piece2)
+        requestLayout()
+//        addView(piece1, pid2)
+//        addView(piece2, pid1)
+//        requestLayout()
     }
 
-    private fun handleMove(start: MotionEvent, end : MotionEvent) {
-        val srcCell = findCellByCoords(start.x.roundToInt(), start.y.roundToInt())
-        val destCell = findCellByCoords(end.x.roundToInt(), end.y.roundToInt())
+    /// --- EVERYTHING BELOW THIS IS GESTURE STUFF AND CAN PROBABLY JUST MOVE TO SOMEWHERE ELSE
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                findViewByTouchEvent(event)
+                return true
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                selectedTubeForMovement!!.animate()
+                    .x(event.rawX + selectedTubeDx - (selectedTubeForMovement!!.getWidth() / 2))
+                    .y(event.rawY + selectedTubeDy - (selectedTubeForMovement!!.getHeight() / 2))
+                    .setDuration(0)
+                    .start();
+            }
+
+            MotionEvent.ACTION_UP ->  {
+                if (start != null) {
+                    handleMove(start!!, event)
+                    return true
+                }
+            }
+            else -> return false
+        }
+        return true
+    }
+
+    //if we can move to event's cell, swap those two (if there's a tube there)
+    private fun handleMove(s: MotionEvent, end : MotionEvent) {
+        val srcCell = findCellByCoords(s.rawX, s.rawY)
+        val destCell = findCellByCoords(end.rawX, end.rawY)
+        Log.v(TAG, "srcCell $srcCell destCell $destCell")
         if (srcCell.equals(destCell)) {
             return
         }
         val destPiece = getGamePieceAt(destCell.first, destCell.second)
         val srcPiece = getGamePieceAt(srcCell.first, srcCell.second)
-        if (!srcPiece.isMoveable() || !destPiece.isMoveable()) {
-            return
+        if (srcPiece.isMoveable() && destPiece.isMoveable()) {
+            swap(srcPiece, destPiece)
         }
-        // go ahead and swap the two pieces
     }
 
+    private fun findViewByTouchEvent(motionEvent: MotionEvent) : Boolean {
+        val x = motionEvent.x
+        val y = motionEvent.y
+        //TODO I can optimize this search if I have a tree representation of the children which of course we do!
+        // can also use top level dimensions
+        for (i in 0 until childCount) {
+            val t = getChildAt(i) as Tube
+            if (t.left < x && t.right > x) {
+                if (t.top < y && t.bottom > y) {
+                    selectedTubeForMovement = t
+                    start = MotionEvent.obtain(motionEvent)
+                    selectedTubeDx = motionEvent.rawX - t.x
+                    selectedTubeDy = motionEvent.rawY - t.y
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
     /**
      * returns Pair of i,j
      */
-    private fun findCellByCoords(x: Int, y: Int) : Pair<Int, Int> = Pair(x/cellWidth, y/cellHeight);
+    private fun findCellByCoords(x: Float, y: Float) : Pair<Int, Int> = Pair((x/cellWidth).toInt(), (y/cellHeight).toInt())
 
-    private fun getGamePieceAt(i : Int, j : Int) : GamePiece = getChildAt(ViewUtils.twoDimensionToOneDimension(i, j, SIZE)) as GamePiece
+    private fun getGamePieceAt(i : Int, j : Int) : Tube = getChildAt(ViewUtils.twoDimensionToOneDimension(i, j, SIZE)) as Tube
 
 }

@@ -16,6 +16,11 @@ abstract class GamePiece(context: Context, id: Int) : View(context) {
     val pieceId : Int
         get() = field
 
+    var location : Pair<Int, Int> = Pair(0,0)
+        set
+        get() = field
+
+
     var paint: Paint = Paint()
 
     init {

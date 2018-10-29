@@ -21,9 +21,15 @@ class ViewUtils {
         fun dpToPx(dp: Int): Int = (dp.times(Resources.getSystem().displayMetrics.density)).toInt()
 
         // Assumes the input is a square matrix
+        /**
+         *
+         */
         fun twoDimensionToOneDimension(i : Int, j : Int, width: Int): Int =  i * width + j
 
-        // Assumes the output is a square matrix
+        /**
+         * x the one dimension
+         * size: the width (assumes that the grid is square)
+         */
         fun oneDimensionToTwoDimension(x : Int, size: Int) : Pair<Int, Int> = Pair(x % size, x / size)
     }
 }
